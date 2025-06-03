@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Description: Spoof both hostname and MAC address on Linux
 # Usage: spoof-me.sh [interface1 interface2 ...]
-# If no interface is given, defaults to eth0 and wlan0
+# If no interface is given, detects and uses all physical wired/wireless interfaces.
 
 set -euo pipefail
 
