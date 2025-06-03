@@ -6,6 +6,12 @@ It detects all physical (non-virtual) network interfaces — both wired and wire
 
 ---
 
+## 🧠 Requirements
+- `macchanger` must be installed.
+    ```bash
+    sudo apt install macchanger
+    ```
+
 ## 🛠️ Installation
 
 1. **Clone the repository and navigate to the directory:**
@@ -68,12 +74,6 @@ ip link show
 cat /etc/hosts
 ```
 </details>
-
-## 🧠 Requirements
-- `macchanger` must be installed.
-    ```bash
-    sudo apt install macchanger
-    ```
 
 ### 📌 Notes
 This script skips loopback, bridge, docker, and virtual interfaces.
