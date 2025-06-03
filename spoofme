@@ -8,7 +8,7 @@ set -euo pipefail
 interfaces=("${@:-eth0 wlan0}")
 
 __set_random_hostname() {
-  local prefix=""
+  local prefix="" # Sets the hostname prefix. E.g. 'server' to get 'server-#####'. The script will ignore if empty
   local random_size=16
 
   local new_hostname
