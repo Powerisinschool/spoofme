@@ -16,7 +16,7 @@ It detects all physical (non-virtual) network interfaces — both wired and wire
 
 1. **Clone the repository and navigate to the directory:**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/spoofme.git 
+   git clone https://github.com/Powerisinschool/spoofme.git 
    cd spoofme
    ```
 
