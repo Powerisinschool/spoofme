@@ -1,64 +1,80 @@
+# SpoofMe
 
-# Random Host
+**SpoofMe** assigns a random hostname and random MAC address to your Linux system every time it boots.
 
-Create and assign a random hostname to a Linux system every time it boots up.
+It detects all physical (non-virtual) network interfaces — both wired and wireless — and spoofs their MAC addresses using `macchanger`.
 
+---
 
-## Installation
+## 🛠️ Installation
 
-  1. Clone the repository and navigate to its directory.
+1. **Clone the repository and navigate to the directory:**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/spoofme.git 
+   cd spoofme
+   ```
+
+2. Copy the `spoofme` script to a location in your `$PATH` (e.g. `/usr/bin/`):
   ```bash
-    git clone https://github.com/ryanmroth/randomhost.git 
-    cd randomhost
+  sudo cp spoofme /usr/bin
+  sudo chmod +x /usr/bin/spoofme
   ```
-  2. Copy the "randomhost" file to the "/usr/bin/" directory or any other location that is included in your $PATH variable:
-  ```bash
-  sudo cp randomhost /usr/bin
-  ```
-  >**Note**: *If copying "randomhost" to a location other than "/usr/bin", edit line 7 in "randomhost.service" accordingly*:
+  >**Note**: *If copying "spoofme" to a location other than "/usr/bin", update the ExecStart in line 8 in "spoofme.service" accordingly*:
   >```diff
-  >- ExecStart=/usr/bin/randomhost
-  >+ ExecStart=/your/directory/randomhost
+  >- ExecStart=/usr/bin/spoofme
+  >+ ExecStart=/your/directory/spoofme
   >```
 
-  3. Set the executable permission for the copied "randomhost" file:
+3. Install the systemd service file:
   ```bash
-  sudo chmod +x /usr/bin/randomhost
+  sudo cp spoofme.service /etc/systemd/system/
+  sudo chmod 644 /etc/systemd/system/spoofme.service
   ```
 
-  4. Copy the "randomhost.service" file to the "/etc/systemd/system/" directory:
+4. Reload systemd to recognize the new service:
   ```bash
-  sudo cp randomhost.service /etc/systemd/system
+  sudo systemctl daemon-reexec
+  sudo systemctl daemon-reload
   ```
 
-  5. Ensure the permissions of the "randomhost.service" file are 644:
+5. Enable the service to run at boot:
   ```bash
-  sudo chmod 644 /etc/systemd/system/randomhost.service
+  sudo systemctl enable spoofme
   ```
 
-  6. Refresh the systemd systemctl daemon by executing:
-  ```bash
-  sudo systemctl daemon-reload 
-  ```
+<details>
+<summary>
+  ### Optional
+  Before rebooting, verify the service works as expected:
+</summary>
 
-  7. Enable the service by running:
-  ```bash
-  sudo systemctl enable randomhost
-  ```
-
-### Optional
-
-Before depending on the boot process, you can manually initiate the service to verify that it operates as intended.
-
-1. Start the service by executing:
+1. Start the service manually:
 ```bash
-sudo systemctl start randomhost
+sudo systemctl start spoofme
 ```
-2. Verify the hostname has been changed by running:
+
+2. Verify the hostname has changed:
 ```bash
 hostname
 ```
-3. Examine the changes to the "/etc/hosts" file:
+
+3. Check if MAC addresses were spoofed:
+```bash
+ip link show
+```
+
+4. Review changes in "/etc/hosts":
 ```bash
 cat /etc/hosts
 ```
+</details>
+
+## 🧠 Requirements
+- `macchanger` must be installed.
+    ```bash
+    sudo apt install macchanger
+    ```
+
+### 📌 Notes
+This script skips loopback, bridge, docker, and virtual interfaces.
+MAC spoofing is applied to all physical wireless and ethernet interfaces by default, or you can pass specific interfaces as arguments.
