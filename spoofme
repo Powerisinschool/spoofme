@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Description: Spoof both hostname and MAC address on Linux
+# Usage: spoof-me.sh [interface1 interface2 ...]
+# If no interface is given, defaults to eth0 and wlan0
+
+set -euo pipefail
+
+interfaces=("${@:-eth0 wlan0}")
+
+__set_random_hostname() {
+  local prefix=""
+  local random_size=16
+
+  local new_hostname
+  if [ -n "$prefix" ]; then
+    new_hostname="$(echo "$prefix" | sed -e 's/[^[:alnum:]]//g')-$(head -n1 < <(fold -w${random_size} < <(tr -cd 'a-z0-9' < /dev/urandom)))"
+  else
+    new_hostname="$(head -n1 < <(fold -w${random_size} < <(tr -cd 'a-z0-9' < /dev/urandom)))"
+  fi
+
+  new_hostname=${new_hostname:0:63}
+
+  echo "[+] Setting hostname to: $new_hostname"
+  hostnamectl set-hostname "$new_hostname"
+  sed -i "/^127\.0\.1\.1\s/c\127.0.1.1       $new_hostname" /etc/hosts
+}
+
+__spoof_mac_address() {
+  local iface="$1"
+
+  if ! ip link show "$iface" &>/dev/null; then
+    echo "[-] Interface $iface does not exist. Skipping."
+    return
+  fi
+
+  echo "[+] Spoofing MAC address for $iface..."
+  ip link set dev "$iface" down
+  macchanger -r "$iface" | grep -E 'New MAC|Current MAC'
+  ip link set dev "$iface" up
+}
+
+__spoof_me() {
+  echo "[*] Spoofing hostname and MAC addresses..."
+  __set_random_hostname
+
+  for iface in "${interfaces[@]}"; do
+    __spoof_mac_address "$iface"
+  done
+
+  echo "[✓] All done!"
+}
+
+__spoof_me
