@@ -5,7 +5,35 @@
 
 set -euo pipefail
 
-interfaces=("${@:-eth0 wlan0}")
+# Function: auto-detect real (non-virtual) network interfaces
+__detect_physical_interfaces() {
+  local detected=()
+
+  for iface in /sys/class/net/*; do
+    local dev=$(basename "$iface")
+
+    # Skip virtual, loopback, docker, and bridge interfaces
+    if [[ "$(readlink -f "$iface")" == *"/virtual/"* ]] || [[ "$dev" == lo ]] || [[ "$dev" == br* ]] || [[ "$dev" == docker* ]]; then
+      continue
+    fi
+
+    # Check for wireless
+    if [[ -d "$iface/wireless" ]]; then
+      detected+=("$dev")
+      continue
+    fi
+
+    # Check for typical physical ethernet interfaces
+    if ethtool "$dev" &>/dev/null; then
+      detected+=("$dev")
+    fi
+  done
+
+  echo "${detected[@]}"
+}
+
+# Use CLI args or detected interfaces
+interfaces=("${@:-$(__detect_physical_interfaces)}")
 
 __set_random_hostname() {
   local prefix="" # Sets the hostname prefix. E.g. 'server' to get 'server-#####'. The script will ignore if empty
