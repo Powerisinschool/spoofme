@@ -44,7 +44,7 @@ It detects all physical (non-virtual) network interfaces — both wired and wire
 
 <details>
 <summary>
-  ### Optional
+  <heading>Optional</heading>
   Before rebooting, verify the service works as expected:
 </summary>
 
