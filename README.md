@@ -53,7 +53,9 @@ It detects all physical (non-virtual) network interfaces — both wired and wire
   <h3>Optional</h3><br />
   Before rebooting, verify the service works as expected:
 </summary>
-<br />
+
+---
+
 1. Start the service manually:
 ```bash
 sudo systemctl start spoofme
